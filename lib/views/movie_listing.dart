@@ -80,43 +80,72 @@ class _MovieListingState extends State<MovieListing> {
 
             const SizedBox(height: 20),
 
-            Row(
-              children: [
-                DropdownButton<int>(
-                  value: quantity,
-                  items: [0, 1, 2, 3, 4, 5].map((number) {
-                    return DropdownMenuItem<int>(
-                      value: number,
-                      child: Text('$number'),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      quantity = value!;
-                    });
+            // Responsive section
+            LayoutBuilder(
+              builder: (context, constraints) {
+                // Ticket dropdown + price
+                Widget ticketSelector = Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DropdownButton<int>(
+                      value: quantity,
+                      items: [0, 1, 2, 3, 4, 5].map((number) {
+                        return DropdownMenuItem<int>(
+                          value: number,
+                          child: Text('$number'),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          quantity = value!;
+                        });
+                      },
+                    ),
+
+                    const SizedBox(width: 20),
+
+                    const Text(
+                      'Adult (£7.50)',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ],
+                );
+
+                // Add to order button
+                Widget orderButton = ElevatedButton(
+                  onPressed: () {
+                    print('Adding $quantity ticket(s)');
                   },
-                ),
+                  child: const Text('ADD TO ORDER'),
+                );
 
-                const SizedBox(width: 20),
+                // Wide window
+                if (constraints.maxWidth > 600) {
+                  return Row(
+                    children: [
+                      ticketSelector,
+                      const SizedBox(width: 40),
+                      orderButton,
+                    ],
+                  );
+                }
 
-                const Text(
-                  'Adult (£7.50)',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 40),
-
-            ElevatedButton(
-              onPressed: () {
-                print('Adding $quantity ticket(s)');
+                // Narrow window
+                else {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ticketSelector,
+                      const SizedBox(height: 20),
+                      orderButton,
+                    ],
+                  );
+                }
               },
-              child: const Text('ADD TO ORDER'),
             ),
           ],
         ),
       ),
     );
   }
-} ////will add the image of the movie poster to the top of the page, above the movie title. Use a placeholder image for now.
+}
