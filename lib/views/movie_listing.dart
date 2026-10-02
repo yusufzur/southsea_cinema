@@ -119,4 +119,4 @@ class _MovieListingState extends State<MovieListing> {
       ),
     );
   }
-} ////add the image of the movie poster to the top of the page, above the movie title. Use a placeholder image for now.
+} ////will add the image of the movie poster to the top of the page, above the movie title. Use a placeholder image for now.
