@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:southsea_cinema/models/movie.dart';
 import 'package:southsea_cinema/constants.dart';
+import 'package:southsea_cinema/views/movie_listing.dart';
 
 class MovieCard extends StatelessWidget {
-  // Stores the movie information passed into this card
   final Movie movie;
 
   const MovieCard({
@@ -13,16 +13,13 @@ class MovieCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Card(
-      // Use the existing cinema theme colours
       color: cinemaSurface,
       margin: const EdgeInsets.all(16),
 
       child: Padding(
         padding: const EdgeInsets.all(16),
 
-        // Makes the card responsive to different screen widths
         child: LayoutBuilder(
           builder: (context, constraints) {
 
@@ -40,7 +37,6 @@ class MovieCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
 
-                // Movie title
                 Text(
                   movie.title,
                   style: const TextStyle(
@@ -52,7 +48,6 @@ class MovieCard extends StatelessWidget {
 
                 const SizedBox(height: 8),
 
-                // Year and age rating
                 Text(
                   '${movie.year} | ${movie.ageRating}',
                   style: const TextStyle(
@@ -63,7 +58,6 @@ class MovieCard extends StatelessWidget {
 
                 const SizedBox(height: 12),
 
-                // Movie description
                 Text(
                   movie.synopsis,
                   style: const TextStyle(
@@ -74,7 +68,6 @@ class MovieCard extends StatelessWidget {
 
                 const SizedBox(height: 12),
 
-                // Screening time
                 Text(
                   movie.screeningTime,
                   style: const TextStyle(
@@ -85,21 +78,30 @@ class MovieCard extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                // Booking button
+                // Booking button - opens the selected movie
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: cinemaBrand,
                     foregroundColor: Colors.black,
                   ),
+
                   onPressed: () {
-                    debugPrint('Booking ${movie.title}');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MovieListing(
+                          movie: movie,
+                        ),
+                      ),
+                    );
                   },
+
                   child: const Text('BOOK NOW'),
                 ),
               ],
             );
 
-            // Wide screens: poster and information side by side
+            // Wide screens
             if (constraints.maxWidth > 600) {
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,7 +117,7 @@ class MovieCard extends StatelessWidget {
               );
             }
 
-            // Narrow screens: poster above information
+            // Narrow screens
             else {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

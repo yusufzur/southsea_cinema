@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:southsea_cinema/constants.dart';
 import 'package:southsea_cinema/views/home_view.dart';
 import 'package:southsea_cinema/views/movie_listing.dart';
+import 'package:southsea_cinema/repositories/movie_repository.dart';
 
 void main() {
   runApp(const SouthseaCinemaApp());
@@ -26,7 +27,9 @@ class SouthseaCinemaApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const HomeView(),
-        '/listing': (context) => const MovieListing(),
+        '/listing': (context) => MovieListing(
+          movie: MovieRepository().getMovies().first,
+        ),
       },
     );
   }
