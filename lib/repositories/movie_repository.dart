@@ -15,7 +15,6 @@ class MovieRepository {
         ticketPrice: 7.50,
         imagePath: 'assets/images/eyes_wide_shut.jpg',
       ),
-
       Movie(
         id: 'the-grand-budapest-hotel',
         title: 'The Grand Budapest Hotel',
@@ -30,4 +29,17 @@ class MovieRepository {
       ),
     ];
   }
+
+  Movie? getMovieById(String id) {
+    for (final movie in getMovies()) {
+      if (movie.id == id) return movie;
+    }
+    return null;
+  }
+
+  List<Movie> getMoviesByAgeRating(String rating) =>
+      getMovies().where((movie) => movie.ageRating == rating).toList();
+
+  List<Movie> getMoviesUnderPrice(double maxPrice) =>
+      getMovies().where((movie) => movie.ticketPrice < maxPrice).toList();
 }
