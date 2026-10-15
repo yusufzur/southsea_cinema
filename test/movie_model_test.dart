@@ -3,7 +3,6 @@ import 'package:southsea_cinema/models/movie.dart';
 
 void main() {
   group('Movie model tests', () {
-
     // Test 1: Check movie properties
     test('creates Movie with correct properties', () {
       const movie = Movie(

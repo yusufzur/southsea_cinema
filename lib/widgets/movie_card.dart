@@ -16,13 +16,10 @@ class MovieCard extends StatelessWidget {
     return Card(
       color: cinemaSurface,
       margin: const EdgeInsets.all(16),
-
       child: Padding(
         padding: const EdgeInsets.all(16),
-
         child: LayoutBuilder(
           builder: (context, constraints) {
-
             // Movie poster
             Widget poster = Image.asset(
               movie.imagePath,
@@ -36,7 +33,6 @@ class MovieCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-
                 Text(
                   movie.title,
                   style: const TextStyle(
@@ -84,7 +80,6 @@ class MovieCard extends StatelessWidget {
                     backgroundColor: cinemaBrand,
                     foregroundColor: Colors.black,
                   ),
-
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -95,7 +90,6 @@ class MovieCard extends StatelessWidget {
                       ),
                     );
                   },
-
                   child: const Text('BOOK NOW'),
                 ),
               ],
@@ -107,9 +101,7 @@ class MovieCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   poster,
-
                   const SizedBox(width: 24),
-
                   Expanded(
                     child: movieDetails,
                   ),
@@ -123,9 +115,7 @@ class MovieCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   poster,
-
                   const SizedBox(height: 16),
-
                   movieDetails,
                 ],
               );

@@ -1,5 +1,12 @@
 class Movie {
-  final String id, title, ageRating, synopsis, room, screeningTime, endTime, imagePath;
+  final String id,
+      title,
+      ageRating,
+      synopsis,
+      room,
+      screeningTime,
+      endTime,
+      imagePath;
   final int year;
   final double ticketPrice;
 

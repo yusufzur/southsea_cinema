@@ -28,7 +28,6 @@ class _MovieListingState extends State<MovieListing> {
         elevation: 0,
       ),
       drawer: const NavDrawer(),
-
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -116,9 +115,7 @@ class _MovieListingState extends State<MovieListing> {
                           });
                         },
                       ),
-
                       const SizedBox(width: 20),
-
                       Text(
                         'Adult (£${widget.movie.ticketPrice.toStringAsFixed(2)})',
                         style: const TextStyle(fontSize: 18),

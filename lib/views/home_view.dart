@@ -9,7 +9,6 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     //Get movies from the repository
     final movies = MovieRepository().getMovies();
 
@@ -23,12 +22,9 @@ class HomeView extends StatelessWidget {
         iconTheme: const IconThemeData(color: cinemaBrand),
         elevation: 0,
       ),
-
       drawer: const NavDrawer(),
-
       body: Column(
         children: [
-
           // Welcome message
           const Padding(
             padding: EdgeInsets.all(16.0),
@@ -46,7 +42,6 @@ class HomeView extends StatelessWidget {
           Expanded(
             child: ListView.builder(
               itemCount: movies.length,
-
               itemBuilder: (context, index) {
                 return MovieCard(
                   movie: movies[index],
