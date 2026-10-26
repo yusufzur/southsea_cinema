@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:southsea_cinema/constants.dart';
 import 'package:southsea_cinema/models/movie.dart';
+import 'package:southsea_cinema/models/basket_item.dart';
+import 'package:southsea_cinema/repositories/basket_repository.dart';
 import 'package:southsea_cinema/widgets/nav_drawer.dart';
 import 'package:southsea_cinema/widgets/primary_button.dart';
 
@@ -72,7 +74,7 @@ class _MovieListingState extends State<MovieListing> {
               const Text(
                 'Please note that Discounts / Membership Benefits '
                 'will be applied once you have selected your tickets',
-                style: TextStyle(fontSize: 18),
+                style: const TextStyle(fontSize: 18),
               ),
 
               const SizedBox(height: 25),
@@ -125,9 +127,28 @@ class _MovieListingState extends State<MovieListing> {
                   Widget orderButton = PrimaryButton(
                     label: 'ADD TO ORDER',
                     onPressed: () {
-                      debugPrint(
-                        'Adding $quantity ticket(s) for ${widget.movie.title}',
-                      );
+                      if (quantity > 0) {
+                        BasketRepository.instance.addItem(
+                          BasketItem(
+                            movie: widget.movie,
+                            quantity: quantity,
+                          ),
+                        );
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Added $quantity ticket(s) for ${widget.movie.title} to basket',
+                            ),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please select at least 1 ticket'),
+                          ),
+                        );
+                      }
                     },
                   );
 
