@@ -23,13 +23,19 @@ class SouthseaCinemaApp extends StatelessWidget {
           primary: cinemaBrand,
           surface: cinemaSurface,
         ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: cinemaSurface,
+          iconTheme: IconThemeData(color: cinemaBrand),
+          titleTextStyle: cinemaHeaderStyle,
+          elevation: 0,
+        ),
       ),
       initialRoute: '/',
       routes: {
         '/': (context) => const HomeView(),
         '/listing': (context) => MovieListing(
-              movie: MovieRepository().getMovies().first,
-            ),
+          movie: MovieRepository().getMovies().first,
+        ),
       },
     );
   }
