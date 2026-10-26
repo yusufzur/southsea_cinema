@@ -16,6 +16,8 @@ void main() {
       expect(basket.getItems(), isEmpty);
       expect(basket.getTotalItems(), 0);
       expect(basket.getTotal(), 0.0);
+      expect(basket.getSubtotal(), 0.0);
+      expect(basket.getTotalDue(), 0.0);
     });
 
     test('adds tickets and calculates totals correctly', () {
@@ -25,6 +27,8 @@ void main() {
       expect(basket.getItems().length, 2);
       expect(basket.getTotalItems(), 5);
       expect(basket.getTotal(), 37.50);
+      expect(basket.getSubtotal(), 37.50);
+      expect(basket.getTotalDue(), 37.50);
     });
 
     test('removes tickets from the basket', () {
@@ -36,6 +40,8 @@ void main() {
 
       expect(basket.getItems(), isEmpty);
       expect(basket.getTotal(), 0.0);
+      expect(basket.getSubtotal(), 0.0);
+      expect(basket.getTotalDue(), 0.0);
     });
 
     test('clears all tickets from the basket', () {
@@ -47,6 +53,8 @@ void main() {
       expect(basket.getItems(), isEmpty);
       expect(basket.getTotalItems(), 0);
       expect(basket.getTotal(), 0.0);
+      expect(basket.getSubtotal(), 0.0);
+      expect(basket.getTotalDue(), 0.0);
     });
   });
 }

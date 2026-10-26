@@ -41,6 +41,14 @@ class BasketRepository {
     return total;
   }
 
+  double getSubtotal() {
+    return getTotal();
+  }
+
+  double getTotalDue() {
+    return getSubtotal();
+  }
+
   void clear() {
     _items.clear();
   }
