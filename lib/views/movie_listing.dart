@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:southsea_cinema/constants.dart';
 import 'package:southsea_cinema/models/movie.dart';
@@ -74,7 +73,7 @@ class _MovieListingState extends State<MovieListing> {
               const Text(
                 'Please note that Discounts / Membership Benefits '
                 'will be applied once you have selected your tickets',
-                style: const TextStyle(fontSize: 18),
+                style: TextStyle(fontSize: 18),
               ),
 
               const SizedBox(height: 25),

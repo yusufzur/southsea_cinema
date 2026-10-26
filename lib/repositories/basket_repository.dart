@@ -1,4 +1,3 @@
-
 import 'package:southsea_cinema/models/basket_item.dart';
 
 class BasketRepository {

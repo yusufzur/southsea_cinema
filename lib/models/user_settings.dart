@@ -1,4 +1,3 @@
-
 class UserSettings {
   final String name;
   final String address;
