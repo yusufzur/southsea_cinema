@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:southsea_cinema/repositories/movie_repository.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('MovieRepository', () {
     final repo = MovieRepository();
 
@@ -30,6 +32,20 @@ void main() {
     test('filters films below a price', () {
       final results = repo.getMoviesUnderPrice(8.0);
       expect(results.every((m) => m.ticketPrice < 8.0), isTrue);
+    });
+
+    test('loads movies from the JSON asset', () async {
+      final repository = MovieRepository();
+
+      final movies = await repository.loadMoviesFromAsset();
+
+      expect(movies.length, 2);
+      expect(movies[0].id, 'eyes-wide-shut');
+      expect(movies[1].id, 'the-grand-budapest-hotel');
+      expect(movies[0].ticketPrice, 7.50);
+      expect(movies[1].ticketPrice, 7.50);
+
+      expect(repository.getMovies(), movies);
     });
   });
 }
