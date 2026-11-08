@@ -82,4 +82,48 @@ void main() {
       expect(movie.isChildFriendly, false);
     });
   });
+
+  group('Movie JSON conversion tests', () {
+    final Map<String, dynamic> movieJson = {
+      'id': 'eyes-wide-shut',
+      'title': 'Eyes Wide Shut',
+      'year': 1999,
+      'ageRating': '18',
+      'synopsis': 'A psychological mystery directed by Stanley Kubrick.',
+      'room': 'Southsea Cinema Room',
+      'screeningTime': 'Thursday 22 Oct 2026, 18:00',
+      'endTime': '20:39',
+      'ticketPrice': 7.50,
+      'imagePath': 'assets/images/eyes_wide_shut.jpg',
+    };
+
+    test('converts JSON to a Movie and back', () {
+      final movie = Movie.fromJson(movieJson);
+
+      expect(movie.id, 'eyes-wide-shut');
+      expect(movie.title, 'Eyes Wide Shut');
+      expect(movie.year, 1999);
+      expect(movie.ageRating, '18');
+      expect(movie.synopsis, movieJson['synopsis']);
+      expect(movie.room, 'Southsea Cinema Room');
+      expect(movie.screeningTime, movieJson['screeningTime']);
+      expect(movie.endTime, '20:39');
+      expect(movie.ticketPrice, 7.50);
+      expect(movie.imagePath, movieJson['imagePath']);
+
+      expect(movie.toJson(), movieJson);
+    });
+
+    test('converts whole-number ticket prices to double', () {
+      final wholeNumberJson = {
+        ...movieJson,
+        'ticketPrice': 7,
+      };
+
+      final movie = Movie.fromJson(wholeNumberJson);
+
+      expect(movie.ticketPrice, 7.0);
+      expect(movie.ticketPrice, isA<double>());
+    });
+  });
 }
