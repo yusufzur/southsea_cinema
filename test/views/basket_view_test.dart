@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:southsea_cinema/database/cinema_db.dart';
 import 'package:southsea_cinema/models/basket_item.dart';
 import 'package:southsea_cinema/models/booking.dart';
+import 'package:southsea_cinema/models/movie.dart';
 import 'package:southsea_cinema/repositories/basket_repository.dart';
 import 'package:southsea_cinema/repositories/movie_repository.dart';
 import 'package:southsea_cinema/views/basket_view.dart';
@@ -182,5 +183,75 @@ void main() {
       find.textContaining('Could not save your booking'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('Removes the middle item from a basket of three', (
+    tester,
+  ) async {
+    final movies = MovieRepository().getMovies();
+
+    final Movie firstMovie = movies.first;
+    final Movie secondMovie = movies.last;
+
+    // Create a third film for testing purposes only.
+    final Movie thirdMovie = Movie.fromJson({
+      ...firstMovie.toJson(),
+      'id': 'third-test-film',
+      'title': 'Third Test Film',
+    });
+
+    // Add three different items to the basket.
+    basket.addItem(
+      BasketItem(movie: firstMovie, quantity: 1),
+    );
+
+    basket.addItem(
+      BasketItem(movie: secondMovie, quantity: 2),
+    );
+
+    basket.addItem(
+      BasketItem(movie: thirdMovie, quantity: 3),
+    );
+
+    expect(basket.getItems(), hasLength(3));
+    expect(basket.getTotalItems(), 6);
+
+    await openBasket(tester);
+
+    // Check that all three films are displayed.
+    expect(find.text(firstMovie.title), findsOneWidget);
+    expect(find.text(secondMovie.title), findsOneWidget);
+    expect(find.text(thirdMovie.title), findsOneWidget);
+
+    // Delete the middle item using its unique Key.
+    final middleDeleteButton = find.byKey(
+      const Key('remove-ticket-1'),
+    );
+
+    await tester.ensureVisible(middleDeleteButton);
+    await tester.tap(middleDeleteButton);
+    await tester.pump();
+
+    // Check that only two items remain.
+    final remainingItems = basket.getItems();
+
+    expect(remainingItems, hasLength(2));
+
+    // Verify the first and third films remain in order.
+    expect(remainingItems[0].movie.id, firstMovie.id);
+    expect(remainingItems[1].movie.id, thirdMovie.id);
+
+    // Verify their quantities are unchanged.
+    expect(remainingItems[0].quantity, 1);
+    expect(remainingItems[1].quantity, 3);
+    expect(basket.getTotalItems(), 4);
+
+    // Verify that the UI displays the correct films.
+    expect(find.text(firstMovie.title), findsOneWidget);
+    expect(find.text(secondMovie.title), findsNothing);
+    expect(find.text(thirdMovie.title), findsOneWidget);
+
+    // Check that the remaining basket items can still be deleted.
+    expect(find.byIcon(Icons.delete_outline), findsNWidgets(2));
   });
 }

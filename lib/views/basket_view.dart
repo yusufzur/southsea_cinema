@@ -227,6 +227,7 @@ class _BasketViewState extends State<BasketView> {
                           ),
                         ),
                         IconButton(
+                          key: Key('remove-ticket-$index'),
                           icon: const Icon(Icons.delete_outline),
                           onPressed: () {
                             setState(() {
