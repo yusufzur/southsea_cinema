@@ -70,7 +70,7 @@ void main() {
     expect(basket.getItems(), isEmpty);
   });
 
-  testWidgets('BasketView clears tickets on checkout', (tester) async {
+  testWidgets('Checkout saves booking and clears the basket', (tester) async {
     basket.addItem(
       BasketItem(movie: movie, quantity: 2),
     );
@@ -78,15 +78,31 @@ void main() {
     await openBasket(tester);
 
     await tester.ensureVisible(find.text('CHECKOUT'));
-    await tester.tap(find.text('CHECKOUT'));
-    await tester.pump();
+
+    await tester.runAsync(() async {
+      await tester.tap(find.text('CHECKOUT'));
+      await tester.pumpAndSettle();
+    });
+
+    await tester.pumpAndSettle();
+
+    final List<Booking>? bookings = await tester.runAsync(() async {
+      return await CinemaDatabase.instance.getAllBookings();
+    });
+
+    expect(bookings, isNotNull);
+
+    if (bookings != null) {
+      expect(bookings.length, 1);
+      expect(bookings[0].bookingNumber, 1001);
+      expect(bookings[0].summary, '2 x Eyes Wide Shut');
+      expect(bookings[0].total, 15.00);
+    }
 
     expect(basket.getItems(), isEmpty);
     expect(find.text('Your basket is empty'), findsOneWidget);
-    expect(
-      find.text('Thank you! Your booking has been received.'),
-      findsOneWidget,
-    );
+    expect(find.text('Booking #1001 saved'), findsOneWidget);
+    expect(find.text('Booking #1001'), findsOneWidget);
   });
 
   testWidgets('BasketView displays saved bookings newest first', (
@@ -135,5 +151,36 @@ void main() {
 
     expect(find.text('Past Bookings'), findsOneWidget);
     expect(find.text('No bookings yet'), findsOneWidget);
+  });
+
+  testWidgets('Checkout keeps the basket when saving fails', (tester) async {
+    basket.addItem(
+      BasketItem(movie: movie, quantity: 2),
+    );
+
+    await openBasket(tester);
+
+    await tester.runAsync(() async {
+      final Database database = await CinemaDatabase.instance.database;
+      await database.execute('DROP TABLE bookings');
+    });
+
+    await tester.ensureVisible(find.text('CHECKOUT'));
+
+    await tester.runAsync(() async {
+      await tester.tap(find.text('CHECKOUT'));
+      await tester.pumpAndSettle();
+    });
+
+    await tester.pumpAndSettle();
+
+    expect(basket.getItems().length, 1);
+    expect(basket.getTotalItems(), 2);
+    expect(basket.getTotalDue(), 15.00);
+    expect(find.text('Eyes Wide Shut'), findsOneWidget);
+    expect(
+      find.textContaining('Could not save your booking'),
+      findsOneWidget,
+    );
   });
 }

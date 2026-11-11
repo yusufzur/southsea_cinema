@@ -27,6 +27,68 @@ class _BasketViewState extends State<BasketView> {
     _loadBookings();
   }
 
+  String _buildSummary(List<BasketItem> items) {
+    final List<String> parts = [];
+
+    for (final BasketItem item in items) {
+      parts.add('${item.quantity} x ${item.movie.title}');
+    }
+
+    return parts.join(', ');
+  }
+
+  String _formatDate(DateTime now) {
+    final String day = now.day.toString().padLeft(2, '0');
+    final String month = now.month.toString().padLeft(2, '0');
+    final String hour = now.hour.toString().padLeft(2, '0');
+    final String minute = now.minute.toString().padLeft(2, '0');
+
+    return '$day/$month/${now.year} $hour:$minute';
+  }
+
+  Future<void> _checkout(
+    BasketRepository basket,
+    List<BasketItem> items,
+  ) async {
+    final String summary = _buildSummary(items);
+    final double total = basket.getTotalDue();
+    final String date = _formatDate(DateTime.now());
+
+    try {
+      final CinemaDatabase database = CinemaDatabase.instance;
+      final int bookingNumber = await database.getNextBookingNumber();
+
+      final Booking booking = Booking(
+        bookingNumber: bookingNumber,
+        summary: summary,
+        total: total,
+        date: date,
+      );
+
+      await database.insertBooking(booking);
+
+      basket.clear();
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        confirmationMessage = 'Booking #$bookingNumber saved';
+      });
+
+      await _loadBookings();
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        confirmationMessage = 'Could not save your booking: $error';
+      });
+    }
+  }
+
   Future<void> _loadBookings() async {
     try {
       final bookings = await CinemaDatabase.instance.getAllBookings();
@@ -37,6 +99,7 @@ class _BasketViewState extends State<BasketView> {
 
       setState(() {
         _bookings = bookings;
+        _errorMessage = '';
         _loading = false;
       });
     } catch (error) {
@@ -198,11 +261,7 @@ class _BasketViewState extends State<BasketView> {
                       child: PrimaryButton(
                         label: 'CHECKOUT',
                         onPressed: () {
-                          setState(() {
-                            basket.clear();
-                            confirmationMessage =
-                                'Thank you! Your booking has been received.';
-                          });
+                          _checkout(basket, items);
                         },
                       ),
                     ),
@@ -210,6 +269,17 @@ class _BasketViewState extends State<BasketView> {
                 ),
               ),
             ],
+            if (items.isNotEmpty && confirmationMessage.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  confirmationMessage,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             const Divider(height: 32),
             const Padding(
               padding: EdgeInsets.all(16),

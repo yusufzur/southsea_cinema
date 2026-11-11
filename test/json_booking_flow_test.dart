@@ -1,17 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:southsea_cinema/database/cinema_db.dart';
 import 'package:southsea_cinema/main.dart';
+import 'package:southsea_cinema/models/booking.dart';
 import 'package:southsea_cinema/repositories/basket_repository.dart';
 import 'package:southsea_cinema/views/movie_listing.dart';
 import 'package:southsea_cinema/views/basket_view.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
   final basket = BasketRepository.instance;
 
-  setUp(() {
+  setUp(() async {
     basket.clear();
     rootBundle.clear();
+
+    sqfliteFfiInit();
+
+    final Database database = await databaseFactoryFfiNoIsolate.openDatabase(
+      inMemoryDatabasePath,
+      options: OpenDatabaseOptions(
+        version: 1,
+        onCreate: CinemaDatabase.instance.createTables,
+      ),
+    );
+
+    CinemaDatabase.instance.setDatabase(database);
+  });
+
+  tearDown(() async {
+    await CinemaDatabase.instance.close();
   });
 
   testWidgets('Books a JSON-loaded movie and completes checkout', (
@@ -56,6 +75,10 @@ void main() {
       tester.element(find.byType(MovieListing)),
     ).pushNamed('/basket');
 
+    await tester.runAsync(() async {
+      await tester.pumpAndSettle();
+    });
+
     await tester.pumpAndSettle();
 
     expect(find.byType(BasketView), findsOneWidget);
@@ -63,13 +86,27 @@ void main() {
 
     final checkoutButton = find.text('CHECKOUT');
     await tester.ensureVisible(checkoutButton);
-    await tester.tap(checkoutButton);
+
+    await tester.runAsync(() async {
+      await tester.tap(checkoutButton);
+      await tester.pumpAndSettle();
+    });
+
     await tester.pumpAndSettle();
 
+    final List<Booking>? bookings = await tester.runAsync(() async {
+      return await CinemaDatabase.instance.getAllBookings();
+    });
+
+    expect(bookings, isNotNull);
+    expect(bookings, hasLength(1));
+    expect(bookings![0].bookingNumber, 1001);
+    expect(bookings[0].summary, '2 x Eyes Wide Shut');
+    expect(bookings[0].total, 15.00);
+
     expect(basket.getItems(), isEmpty);
-    expect(
-      find.text('Thank you! Your booking has been received.'),
-      findsOneWidget,
-    );
+    expect(find.text('Your basket is empty'), findsOneWidget);
+    expect(find.text('Booking #1001 saved'), findsOneWidget);
+    expect(find.text('Booking #1001'), findsOneWidget);
   });
 }
